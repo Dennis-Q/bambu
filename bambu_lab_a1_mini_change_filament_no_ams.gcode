@@ -1,13 +1,36 @@
+;===== Latest change filament code (no AMS for A1 Mini) can be found at:
+;===== https://github.com/Dennis-Q/bambu
+;=====
+;===== Based on work of eukatree and some contributors (Hillbilly-Phil and pakonambawan)
+;===== https://github.com/eukatree/Bambu_CustomGCode/
+;=====
+;===== Updated: 20240820
+;================================================
+;
+;===== Install instructions (Bambu Studio / Orca Slicer):
+;===== Copy this complete file (including all comments)
+;===== to the 'Change filament G-code'-section which can be 
+;===== found in 'Printer settings' - 'Machine code' menu.
+;===== Then, save the printer and use it with multi-color prints.
+;
+;===== Instructions (by Hillbilly-Phil): =====
+; when print has paused, go into control
+; set the nozzle temp to the temp you were printing with
+; unload the filament by pushing on the upper extruder-button 
+; load the new filament by pushing on the lower extruder-button 
+; resume the print (flushing will happen next,
+; flushing volumes can be set in Bambu Studio as if using an AMS)
+;
 ;===== machine: A1 mini =========================
 ;===== date: 20240618 =======================
 G392 S0
 M1007 S0
-M620 S[next_extruder]A
+;M620 S[next_extruder]A ; REMOVED: (skips all next code if no AMS is available)
 M204 S9000
 {if toolchange_count > 1}
 G17
 G2 Z{max_layer_z + 0.4} I0.86 J0.86 P1 F10000 ; spiral lift a little from second lift
-{endif}
+;=endif= ; MOVED DOWN: To ensure all needed code is executed. Changed curly braces signs to equal signs to solve parse error.
 G1 Z{max_layer_z + 3.0} F1200
 
 M400
@@ -18,19 +41,30 @@ M104 S[old_filament_temp]
 {endif}
 
 G1 X180 F18000
+G1 X197 F500 ; ADDED: finetuning by pakonambawan
+G1 X180 F500 ; ADDED: finetuning by pakonambawan
+
 M620.1 E F[old_filament_e_feedrate] T{nozzle_temperature_range_high[previous_extruder]}
 M620.10 A0 F[old_filament_e_feedrate]
 T[next_extruder]
 M620.1 E F[new_filament_e_feedrate] T{nozzle_temperature_range_high[next_extruder]}
 M620.10 A1 F[new_filament_e_feedrate] L[flush_length] H[nozzle_diameter] T[nozzle_temperature_range_high]
 
-G1 Y90 F9000
+;G1 Y90 F9000 ; REMOVED from original GCODE
+; -- BEGIN ADDED LINES --
+G1 X0 Y90 F18000
+G1 X-13.5 F9000
+G1 E-13.5 F900
+
+; pause for user to load and press resume
+M400 U1
+; -- END ADDED LINES --
 
 {if next_extruder < 255}
 M400
 
 G92 E0
-M628 S0
+;M628 S0 ; REMOVED: causes filter to crash without AMS
 
 {if flush_length_1 > 1}
 ; FLUSH_START
@@ -187,6 +221,12 @@ M204 S[default_acceleration]
 {else}
 G1 X[x_after_toolchange] Y[y_after_toolchange] Z[z_after_toolchange] F12000
 {endif}
+
+; -- BEGIN ADDED LINES --
+{endif}
+M620 S[next_extruder]A
+T[next_extruder]
+; -- END ADDED LINES --
 M621 S[next_extruder]A
 
 
