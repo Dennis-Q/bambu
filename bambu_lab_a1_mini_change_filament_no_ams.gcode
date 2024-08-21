@@ -25,7 +25,7 @@
 ;===== date: 20240618 =======================
 G392 S0
 M1007 S0
-;M620 S[next_extruder]A ; REMOVED: (skips all next code if no AMS is available)
+;M620 S[next_extruder]A ; REMOVED: skips all next code if no AMS is available
 M204 S9000
 {if toolchange_count > 1}
 G17
@@ -64,7 +64,7 @@ M400 U1
 M400
 
 G92 E0
-;M628 S0 ; REMOVED: causes filter to crash without AMS
+;M628 S0 ; REMOVED: causes printer to crash without AMS
 
 {if flush_length_1 > 1}
 ; FLUSH_START
