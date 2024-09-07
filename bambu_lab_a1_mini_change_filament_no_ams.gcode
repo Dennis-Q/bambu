@@ -4,7 +4,7 @@
 ;===== Based on work of eukatree and some contributors (Hillbilly-Phil and pakonambawan)
 ;===== https://github.com/eukatree/Bambu_CustomGCode/
 ;=====
-;===== Updated: 20240820
+;===== Updated: 20240907
 ;================================================
 ;
 ;===== Install instructions (Bambu Studio / Orca Slicer):
@@ -22,7 +22,7 @@
 ; flushing volumes can be set in Bambu Studio as if using an AMS)
 ;
 ;===== machine: A1 mini =========================
-;===== date: 20240618 =======================
+;===== date: 20240830 =======================
 G392 S0
 M1007 S0
 ;M620 S[next_extruder]A ; REMOVED: skips all next code if no AMS is available
@@ -235,6 +235,10 @@ M622.1 S0
 M9833 F{outer_wall_volumetric_speed/2.4} A0.3 ; cali dynamic extrusion compensation
 M1002 judge_flag filament_need_cali_flag
 M622 J1
+  G92 E0
+  G1 E-[new_retract_length_toolchange] F1800
+  M400
+  
   M106 P1 S178
   M400 S7
   G1 X0 F18000
